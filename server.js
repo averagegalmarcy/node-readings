@@ -1,5 +1,7 @@
 var http = require("http");
 var url = require("url");
+var formidable = require("formidable");
+
 
 // http.createServer(function(request, response) {
 //   response.writeHead(200, { "Content-Type": "text/plain" });
@@ -16,31 +18,39 @@ var url = require("url");
 // http.createServer(onRequest).listen(8888);
 // console.log('server has started');
 
-// function start(route) {
+function start(route, handle) {
+function onRequest(request, response) {
+var postData = "";
+var pathname = url.parse(request.url).pathname; console.log("Request for " + pathname + " received.");
+    request.setEncoding("utf8");
+    
+    request.addListener("data", function(postDataChunk) { postData += postDataChunk;
+    
+    console.log("Received POST data chunk '"+ postDataChunk + "'.");
+
+  });
+    
+    request.addListener("end", function() { route(handle, pathname, response, postData);
+
+    }); 
+  }
+    http.createServer(onRequest).listen(8888);
+      console.log("Server has started.");
+}
+    
+  exports.start = start;
+// function start(route, handle) {
 //   function onRequest(request, response) {
 //     var pathname = url.parse(request.url).pathname;
 //     console.log("requested for" + pathname  + "received");
-//     route(pathname);
 //     response.writeHead(200, { "Content-Type": "text/plain" });
-//     response.write("Hello World 2");
+//     var content = route(handle, pathname);
+//     response.write(content);
 //     response.end();
 //   }
 //   http.createServer(onRequest).listen(8888);
 //   console.log("server has started");
 // }
 // exports.start = start;
-// database.query("SELECT * FROM hugetable", rows => {
-//    var result = rows;
-// });
-// console.log('Hello World');
 
-function start() {
-  console.log("request handler 'start' was called");
-}
 
-function upload() {
-  console.log("requested handler upload was called");
-}
-
-exports.start = start;
-exports.upload = upload;
